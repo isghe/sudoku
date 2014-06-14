@@ -504,23 +504,26 @@ namespace isi{
 		LogicAssert (true == IsGoodPtr (theCellValue));
 		std::string aFileString; 
 		{
-		std::ifstream aInputFileStrem (theFileName);
-		std::string aLineString;
-		while (std::getline (aInputFileStrem, aLineString)){
-			aFileString += aLineString;
+			std::ifstream aInputFileStrem (theFileName);
+			std::string aLineString;
+			while (std::getline (aInputFileStrem, aLineString)){
+				aFileString += " " + aLineString;
+			}
 		}
-		}
-		// ISI_DUMP (aFileString);
-		std::istringstream   incoming_stream(aFileString);
+		#if _DEBUG
+		ISI_DUMP (aFileString);
+		#endif
+		std::istringstream incoming_stream(aFileString);
 		for (int i = 0; i < kDim*kDim; ++i){
 			CellValue aCellValue;
 			std::string aSeparetor;
 			incoming_stream >> aCellValue;
 			incoming_stream >> aSeparetor;
 			theCellValue [i] = aCellValue;
-			// ISI_DUMP (aCellValue);
+			#if _DEBUG
+			ISI_DUMP (aCellValue);
+			#endif
 		}
-
 	}
 	
 	static void my_main (const char * theFileName){
