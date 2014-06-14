@@ -635,15 +635,15 @@ Apple LLVM version 5.1 (clang-503.0.40) (based on LLVM 3.4svn)
 Target: x86_64-apple-darwin13.2.0
 Thread model: posix
 
- $ g++ -g -Wall -ansi -pedantic main.cpp -o sudoku.out
- $ g++ -g -Wall -ansi -pedantic -D_DEBUG main.cpp -o sudoku.out
+ $ g++ -O3 -Wall -ansi -pedantic main.cpp -o sudoku.out
+ $ g++ -g -Wall -ansi -pedantic -D_DEBUG main.cpp -o sudoku_d.out
 
  run:
- $ ./sudoku.out example/diabolikus_08062008.sdk
+ *$ ./sudoku.out example/diabolikus_08062008.sdk 
 main: isi::GetGnuVersion (): 4;
 __FILE__: main.cpp;
 __DATE__: Jun 14 2014;
-__TIME__: 16:58:03;
+__TIME__: 17:33:25;
 main: isi::BoolToStr (isi::IsDebugVersion ()): false;
 my_main: theFileName: example/diabolikus_08062008.sdk;
 my_main: std::count_if (aCell, aCell + kDim * kDim, IsInitValue): 26;
@@ -674,8 +674,7 @@ HandleNextRecursive: BoolToStr (IsGoodSolution (theRowVector, theColVector, theS
 my_main: isi::gNumOfCall: 21669;
 my_main: isi::gNumOfSolution: 1;
 main: rit: 0;
-main: std::clock () - aStart: 29669;
-
+main: std::clock () - aStart: 2960;
 */
 	const std::clock_t aStart = std::clock ();
 	volatile int rit = 1;
