@@ -619,6 +619,15 @@ namespace isi{
 }
 
 int main (int argc, char* argv []){
+/*
+ $ g++ -g -Wall -ansi -pedantic main.cpp -o sudoku.out
+ $ g++ -g -Wall -ansi -pedantic -D_DEBUG main.cpp -o sudoku.out
+ $ g++ --version
+Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/4.2.1
+Apple LLVM version 5.1 (clang-503.0.40) (based on LLVM 3.4svn)
+Target: x86_64-apple-darwin13.2.0
+Thread model: posix
+*/
 	const std::clock_t aStart = std::clock ();
 	volatile int rit = 1;
 	try{
