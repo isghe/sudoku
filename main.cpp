@@ -1,15 +1,15 @@
 //
 // Monza (MI), Italy
 // 6 september 2005
-// Isidoro Ghezzi
-// isidoro.please_no_spam1234.ghezzi@tiscali.it
+// Copyright 2005, Isidoro Ghezzi
+// isidoro.ghezzi@tiscali.it
 //
 // Lissone (MB), Italy
 // Sat Jun 14 16:12:24 CEST 2014
-// Isidoro Ghezzi
+// Copyright 2005-2014, Isidoro Ghezzi
 // isidoro.ghezzi@icloud.com
 //
-// Ported to mavericks Mac OS X 10.9
+// Porting to mavericks, Mac OS X 10.9
 //
 
 #include <iostream>
