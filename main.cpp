@@ -367,7 +367,7 @@ namespace isi{
 		ISI_DUMP (thePair.second.second);
 		return true;
 	}
-#endif
+
 	
 	static bool MyCountFree (const Cell * theCell){
 		return theCell->GetStatus () == eCellStatusVariable;
@@ -376,7 +376,8 @@ namespace isi{
 	static std::size_t CountFree (const CellVector &theCellVector){
 		return std::count_if (theCellVector, theCellVector + kDim, MyCountFree);
 	}
-	
+#endif
+
 	static std::size_t CountFreeFree (const CellVector theCellVector1, const CellVector theCellVector2, const CellVector theCellVector3){
 		bool aValueVect [kDim] = {false};
 		for (int i = 0; i < kDim; ++i){
@@ -418,9 +419,14 @@ namespace isi{
 				const std::size_t aRowIndex = kIndexHelper [i][0] - 1;
 				const std::size_t aColIndex = kIndexHelper [i][1] - 1;
 				const std::size_t aSqrIndex = kIndexHelper [i][2] - 1;
-				const std::size_t aCountFreeRow = CountFree (theRowVector [aRowIndex]);
-				const std::size_t aCountFreeCol = CountFree (theColVector [aColIndex]);
-				const std::size_t aCountFreeSqr = CountFree (theSqrVector [aSqrIndex]);
+#ifdef _DEBUG
+                const std::size_t aCountFreeRow = CountFree (theRowVector [aRowIndex]);
+                const std::size_t aCountFreeCol = CountFree (theColVector [aColIndex]);
+                const std::size_t aCountFreeSqr = CountFree (theSqrVector [aSqrIndex]);
+                ISI_DUMP(aCountFreeRow);
+                ISI_DUMP(aCountFreeCol);
+                ISI_DUMP(aCountFreeSqr);
+#endif
 				const std::size_t aCountFreeFree = CountFreeFree (theRowVector [aRowIndex], theColVector [aColIndex], theSqrVector [aSqrIndex]);
 				const std::pair <unsigned short, std::pair <ECellStatus, unsigned short> > aPair (i, std::pair <ECellStatus, unsigned short> (theCell [i].GetStatus (), aCountFreeFree));
 				sTransformArray.push_back (aPair);
@@ -437,7 +443,7 @@ namespace isi{
 	static bool HandleNextRecursive (const unsigned short theIndex, Cell * theCell, MatrixOfCellPtr &theRowVector, MatrixOfCellPtr &theColVector, MatrixOfCellPtr &theSqrVector){
 		LogicAssert (true == IsGoodPtr (theCell));
 		LogicAssert (true == IsGoodSchema (theRowVector, theColVector, theSqrVector));
-		// DumpMatrix ("theRowVector", theRowVector);
+
 		const unsigned short aTransformedIndex = TransformIndex (theIndex, theCell, theRowVector, theColVector, theSqrVector);
 		gNumOfCall++;
 		if (theIndex >= kDim * kDim){
@@ -461,7 +467,6 @@ namespace isi{
 
 		bool rit = false;
 		for (CellValue aValue = 0; aValue < kDim; ++aValue){
-			// if ((theCell [theIndex].GetValue () == aValue+1) /*|| (theCell [theIndex].GetValue () == 0)*/) continue;
 			LogicAssert (theCell [aTransformedIndex].GetValue () != aValue+1);
 			LogicAssert (theCell [aTransformedIndex].GetValue () == 0);
 			
@@ -623,13 +628,54 @@ namespace isi{
 
 int main (int argc, char* argv []){
 /*
- $ g++ -g -Wall -ansi -pedantic main.cpp -o sudoku.out
- $ g++ -g -Wall -ansi -pedantic -D_DEBUG main.cpp -o sudoku.out
+	compile:
  $ g++ --version
 Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/4.2.1
 Apple LLVM version 5.1 (clang-503.0.40) (based on LLVM 3.4svn)
 Target: x86_64-apple-darwin13.2.0
 Thread model: posix
+
+ $ g++ -g -Wall -ansi -pedantic main.cpp -o sudoku.out
+ $ g++ -g -Wall -ansi -pedantic -D_DEBUG main.cpp -o sudoku.out
+
+ run:
+ $ ./sudoku.out example/diabolikus_08062008.sdk
+main: isi::GetGnuVersion (): 4;
+__FILE__: main.cpp;
+__DATE__: Jun 14 2014;
+__TIME__: 16:58:03;
+main: isi::BoolToStr (isi::IsDebugVersion ()): false;
+my_main: theFileName: example/diabolikus_08062008.sdk;
+my_main: std::count_if (aCell, aCell + kDim * kDim, IsInitValue): 26;
+aRow:
+	7, 	0, 	1, 	0, 	5, 	0, 	0, 	0, 	0, 
+	8, 	4, 	0, 	1, 	9, 	0, 	0, 	7, 	0, 
+	0, 	0, 	0, 	0, 	0, 	2, 	0, 	0, 	0, 
+	6, 	8, 	0, 	0, 	0, 	0, 	0, 	1, 	0, 
+	0, 	0, 	7, 	0, 	0, 	0, 	9, 	0, 	0, 
+	0, 	1, 	0, 	0, 	0, 	0, 	0, 	4, 	3, 
+	0, 	0, 	0, 	2, 	0, 	0, 	0, 	0, 	0, 
+	0, 	7, 	0, 	0, 	8, 	4, 	0, 	9, 	5, 
+	0, 	0, 	0, 	0, 	7, 	0, 	2, 	0, 	6, 
+HandleNextRecursive: aCurrentSolution: 1;
+HandleNextRecursive: gNumOfCall: 17604;
+HandleNextRecursive: static_cast <double >(gNumOfCall)/aCurrentSolution: 17604;
+theRowVector:
+	7, 	2, 	1, 	3, 	5, 	8, 	4, 	6, 	9, 
+	8, 	4, 	5, 	1, 	9, 	6, 	3, 	7, 	2, 
+	3, 	9, 	6, 	7, 	4, 	2, 	8, 	5, 	1, 
+	6, 	8, 	2, 	4, 	3, 	9, 	5, 	1, 	7, 
+	4, 	3, 	7, 	5, 	6, 	1, 	9, 	2, 	8, 
+	5, 	1, 	9, 	8, 	2, 	7, 	6, 	4, 	3, 
+	9, 	6, 	8, 	2, 	1, 	5, 	7, 	3, 	4, 
+	2, 	7, 	3, 	6, 	8, 	4, 	1, 	9, 	5, 
+	1, 	5, 	4, 	9, 	7, 	3, 	2, 	8, 	6, 
+HandleNextRecursive: BoolToStr (IsGoodSolution (theRowVector, theColVector, theSqrVector)): true;
+my_main: isi::gNumOfCall: 21669;
+my_main: isi::gNumOfSolution: 1;
+main: rit: 0;
+main: std::clock () - aStart: 29669;
+
 */
 	const std::clock_t aStart = std::clock ();
 	volatile int rit = 1;
