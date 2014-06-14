@@ -170,7 +170,6 @@ namespace isi{
 	SCell::SCell (void):
 	fValue (0),
 	fStatus (eCellStatusVariable){
-        ISI_DUMP(this);
 	}
 
 	SCell::~SCell (void){
@@ -361,12 +360,14 @@ namespace isi{
 		return  CalcSortValue (thePair2.second) >  CalcSortValue (thePair1.second);
 	}
 
+#ifdef _DEBUG
 	static bool MyDump (const std::pair <unsigned short, std::pair <ECellStatus, unsigned short> > &thePair){
 		ISI_DUMP (thePair.first);
 		ISI_DUMP (thePair.second.first);
 		ISI_DUMP (thePair.second.second);
 		return true;
 	}
+#endif
 	
 	static bool MyCountFree (const Cell * theCell){
 		return theCell->GetStatus () == eCellStatusVariable;
@@ -425,7 +426,9 @@ namespace isi{
 				sTransformArray.push_back (aPair);
 			}
 			std::sort (sTransformArray.begin (), sTransformArray.end (), MyCompare);
+			#ifdef _DEBUG
 			std::for_each (sTransformArray.begin (), sTransformArray.end (), MyDump);
+			#endif
 		}
 		// return  kDim*kDim - theIndex - 1;
 		return sTransformArray [theIndex].first;
@@ -600,10 +603,12 @@ namespace isi{
 				}
 			}
 		}
-		isi::DumpMatrix ("aRow", aRow);
+
+		#ifdef _DEBUG
 		isi::DumpMatrix ("aCol", aCol);
 		isi::DumpMatrix ("aSqr", aSqr);
-		
+		#endif
+
 		RuntimeAssert (true == IsGoodSchema (aRow, aCol, aSqr));
 		(void) isi::HandleNextRecursive (0, aCell, aRow, aCol, aSqr);
 
