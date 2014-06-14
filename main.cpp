@@ -639,7 +639,7 @@ Thread model: posix
  $ g++ -g -Wall -ansi -pedantic -D_DEBUG main.cpp -o sudoku_d.out
 
  run:
- *$ ./sudoku.out example/diabolikus_08062008.sdk 
+ $ ./sudoku.out example/diabolikus_08062008.sdk
 main: isi::GetGnuVersion (): 4;
 __FILE__: main.cpp;
 __DATE__: Jun 14 2014;
