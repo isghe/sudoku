@@ -242,10 +242,10 @@ namespace isi{
 	};
 
 	static bool IsAvailable (CellVector theCellVector, const CellValue theCellValue){
-		LogicAssert ((theCellValue >= 1) && (theCellValue <= 9));
+        LogicAssert ((theCellValue >= 1) && (theCellValue <= 9));
 
-		Cell ** aIterResult = std::find_if (&theCellVector[0], &theCellVector[0] + kDim , SFindHelper (theCellValue));
-		return  &theCellVector [kDim] == aIterResult;
+        CellVector::iterator aIterResult = std::find_if (theCellVector.begin (), theCellVector.end () , SFindHelper (theCellValue));
+        return  theCellVector.end () == aIterResult;
 	}
 
 	struct SCountHelper: public std::binary_function <bool, Cell *, CellValue>{
@@ -262,10 +262,10 @@ namespace isi{
 	};
 
 	static bool IsGoodSchemaSequence (const CellVector &theCellVector){
-		size_t aNumTotal = std::count_if (&theCellVector [0], &theCellVector[0] + kDim , SCountHelper (0));
+		size_t aNumTotal = std::count_if (theCellVector.begin (), theCellVector.end (), SCountHelper (0));
 		bool rit = true;
 		for (CellValue aCellValue = 0; aCellValue < kDim && rit; ++aCellValue){
-			const size_t aNumValue = std::count_if (&theCellVector [0], &theCellVector[0] + kDim , SCountHelper (aCellValue + 1));
+			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end (), SCountHelper (aCellValue + 1));
 			aNumTotal += aNumValue;
 			rit = ((1 == aNumValue) || (0 == aNumValue));
 		}
@@ -276,14 +276,14 @@ namespace isi{
 		LogicAssert (true == IsGoodSchemaSequence (theCellVector));
 		bool rit = true;
 		for (CellValue aCellValue = 0; aCellValue < kDim && rit; ++aCellValue){
-			const size_t aNumValue = std::count_if (&theCellVector [0], &theCellVector[0] + kDim , SCountHelper (aCellValue + 1));
+			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end () , SCountHelper (aCellValue + 1));
 			rit = (1 == aNumValue);
 		}
 		return rit;
 	}
 	
 	template <class TAlgo>
-	bool IsGood ( MatrixOfCellPtr  &theRowVector,   MatrixOfCellPtr  &theColVector,   MatrixOfCellPtr  &theSqrVector, const TAlgo theAlgo){
+	bool IsGood ( MatrixOfCellPtr  &theRowVector,  MatrixOfCellPtr  &theColVector,   MatrixOfCellPtr  &theSqrVector, const TAlgo theAlgo){
 		bool rit = true;
 		for (std::size_t i = 0; (i < kDim) && rit; ++i){
 			rit = theAlgo (theRowVector [i]) &&
