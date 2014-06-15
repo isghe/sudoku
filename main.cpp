@@ -442,7 +442,7 @@ namespace isi{
 		for (CellValue aValue = 0; aValue < kDim; ++aValue){
 			LogicAssert (theCell [aTransformedIndex].GetValue () != aValue+1);
 			LogicAssert (theCell [aTransformedIndex].GetValue () == 0);
-			
+            // TODO: use a loop
 			#ifdef _DEBUG
 			const std::size_t aRowIndex = kIndexHelper [aTransformedIndex][0] - 1; const bool aRowAvailable = isi::IsAvailable (theSchema [0][aRowIndex], aValue + 1);
 			const std::size_t aColIndex = kIndexHelper [aTransformedIndex][1] - 1; const bool aColAvailable = isi::IsAvailable (theSchema [1][aColIndex], aValue + 1);
