@@ -358,32 +358,21 @@ namespace isi{
 	}
 #endif
 
-	static std::size_t CountFreeFree (const CellVector theCellVector1, const CellVector theCellVector2, const CellVector theCellVector3){
+	static std::size_t CountFreeFree (CellVector ** aMatrix){
+        LogicAssert(true == IsGoodPtr(aMatrix));
 		bool aValueVect [kDim] = {false};
 		for (std::size_t i = 0; i < kDim; ++i){
-			const unsigned short aVal1 = theCellVector1 [i]->GetValue ();
-			if (aVal1 > 0){
-                LogicAssert(IsInCRange <std::size_t>(0, aVal1 - 1, IG_DIM_OF_ARRAY(aValueVect)));
-				if (false == aValueVect [aVal1 - 1]){
-					aValueVect [aVal1 - 1] = true;
-				}
-			}
-
-			const unsigned short aVal2 = theCellVector2 [i]->GetValue ();
-			if (aVal2 > 0){
-                LogicAssert(IsInCRange <std::size_t>(0, aVal2 - 1, IG_DIM_OF_ARRAY(aValueVect)));
-				if (false == aValueVect [aVal2 - 1]){
-					aValueVect [aVal2 - 1] = true;
-				}
-			}
-
-			const unsigned short aVal3 = theCellVector3 [i]->GetValue ();
-			if (aVal3 > 0){
-                LogicAssert(IsInCRange <std::size_t>(0, aVal3 - 1, IG_DIM_OF_ARRAY(aValueVect)));
-				if (false == aValueVect [aVal3 - 1]){
-					aValueVect [aVal3 - 1] = true;
-				}
-			}
+            for (int j = 0; j < 3; ++j){
+                LogicAssert(true == IsGoodPtr(aMatrix[j]));
+                LogicAssert(true == IsGoodPtr((*aMatrix[j])[i]));
+                const unsigned short aVal = (*aMatrix[j])[i]->GetValue ();
+                if (aVal > 0){
+                    LogicAssert(IsInCRange <std::size_t>(0, aVal - 1, IG_DIM_OF_ARRAY(aValueVect)));
+                    if (false == aValueVect [aVal - 1]){
+                        aValueVect [aVal - 1] = true;
+                    }
+                }
+            }
 		}
 		
 		return std::count (aValueVect, aValueVect + kDim, false);
@@ -408,7 +397,10 @@ namespace isi{
                 ISI_DUMP(aCountFreeCol);
                 ISI_DUMP(aCountFreeSqr);
 #endif
-				const std::size_t aCountFreeFree = CountFreeFree (theSchema [0][aRowIndex], theSchema [1][aColIndex], theSchema [2][aSqrIndex]);
+                CellVector * aMatrix []={
+                    &theSchema [0][aRowIndex], &theSchema [1][aColIndex], &theSchema [2][aSqrIndex]
+                };
+				const std::size_t aCountFreeFree = CountFreeFree (aMatrix);
 				const std::pair <unsigned short, std::pair <ECellStatus, unsigned short> > aPair (i, std::pair <ECellStatus, unsigned short> (theCell [i].GetStatus (), aCountFreeFree));
 				sTransformArray.push_back (aPair);
 			}
