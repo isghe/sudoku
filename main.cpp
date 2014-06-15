@@ -214,7 +214,8 @@ namespace isi{
 }
 
 namespace isi{
-	typedef SCell * MatrixOfCellPtr [kDim][kDim];
+	typedef Cell * CellVector [kDim];
+	typedef CellVector MatrixOfCellPtr [kDim];
 	static void DumpMatrix (const char * theIdentifier, const MatrixOfCellPtr  &theMatrix){
 		LogicAssert (true == IsGoodPtr (theIdentifier));
 		std::cout << theIdentifier << ":" << std::endl;
@@ -240,7 +241,7 @@ namespace isi{
 		}
 	};
 
-	static bool IsAvailable (Cell * theCellVector [kDim], const CellValue theCellValue){
+	static bool IsAvailable (CellVector theCellVector, const CellValue theCellValue){
 		LogicAssert ((theCellValue >= 1) && (theCellValue <= 9));
 
 		Cell ** aIterResult = std::find_if (&theCellVector[0], &theCellVector[0] + kDim , SFindHelper (theCellValue));
@@ -259,9 +260,7 @@ namespace isi{
 			LogicAssert (/*(theCellValue >= 0) &&*/ (theCellValue <= 9));
 		}
 	};
-	
-	typedef Cell * CellVector [kDim];
-	
+
 	static bool IsGoodSchemaSequence (const CellVector &theCellVector){
 		size_t aNumTotal = std::count_if (&theCellVector [0], &theCellVector[0] + kDim , SCountHelper (0));
 		bool rit = true;
