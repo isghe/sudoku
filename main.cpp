@@ -215,7 +215,7 @@ namespace isi{
 
 namespace isi{
 	typedef SCell * MatrixOfCellPtr [kDim][kDim];
-	static void DumpMatrix (const char * theIdentifier, MatrixOfCellPtr  &theMatrix){
+	static void DumpMatrix (const char * theIdentifier, const MatrixOfCellPtr  &theMatrix){
 		LogicAssert (true == IsGoodPtr (theIdentifier));
 		std::cout << theIdentifier << ":" << std::endl;
 		for (std::size_t j = 0; j < kDim; ++j){
@@ -229,7 +229,7 @@ namespace isi{
 
 	struct SFindHelper: public std::binary_function <bool, SCell *, CellValue>{
 		const CellValue fCellValue;
-		bool operator () (Cell * theIter) const{
+		bool operator () (const Cell * theIter) const{
 			LogicAssert (true == IsGoodPtr (theIter));
 			return theIter->GetValue () == fCellValue;
 		}
@@ -510,6 +510,7 @@ namespace isi{
 		std::string aFileString; 
 		{
 			std::ifstream aInputFileStrem (theFileName);
+            RuntimeAssert(!!aInputFileStrem);
 			std::string aLineString;
 			while (std::getline (aInputFileStrem, aLineString)){
 				aFileString += " " + aLineString;
