@@ -571,7 +571,7 @@ namespace isi{
 		ISI_DUMP (std::count_if (aCell, aCell + kDim * kDim, IsInitValue));
 
 		// alias of rows
-		Cell * aRow  [kDim][kDim]= {{NULL}};
+		MatrixOfCellPtr aRow = {{NULL}};
 		std::size_t i = 0;
 		std::size_t j = 0;
 		for (j = 0; j < kDim; ++j){
@@ -584,7 +584,7 @@ namespace isi{
 		isi::DumpMatrix ("aRow", aRow);
 		
 		// alias of columns
-		Cell * aCol  [kDim][kDim] = {{NULL}};
+		MatrixOfCellPtr aCol = {{NULL}};
 		for (j = 0; j < kDim; ++j){
 			for (i = 0; i < kDim; ++i){
                 LogicAssert(IsInCRange <std::size_t>(0, i + j*kDim, IG_DIM_OF_ARRAY(aCell)));
@@ -593,7 +593,7 @@ namespace isi{
 		}
 		
 		// alias of square
-		Cell * aSqr [kDim][kDim] = {{NULL}};
+		MatrixOfCellPtr aSqr = {{NULL}};
 		const std::size_t aTransform [kDim][3] = {
 			{0, 0, 0}, {1, 0, 3}, {2, 0, 6},
 			{3, 3, 0}, {4, 3, 3}, {5, 3, 6},
