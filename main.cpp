@@ -283,22 +283,25 @@ namespace isi{
 	}
 	
 	template <class TAlgo>
-	bool IsGood ( MatrixOfCellPtr  &theRowVector,  MatrixOfCellPtr  &theColVector,   MatrixOfCellPtr  &theSqrVector, const TAlgo theAlgo){
+	bool IsGood (const MatrixOfCellPtr * theSchema, const TAlgo theAlgo){
+        LogicAssert(true == IsGoodPtr(theSchema));
 		bool rit = true;
 		for (std::size_t i = 0; (i < kDim) && rit; ++i){
-			rit = theAlgo (theRowVector [i]) &&
-				theAlgo (theColVector [i]) &&
-				theAlgo (theSqrVector [i]);
+			rit = theAlgo (theSchema [0][i]) &&
+				theAlgo (theSchema [1][i]) &&
+				theAlgo (theSchema [2][i]);
 		}
 		return rit;		
 	}
 	
-	static bool IsGoodSolution (MatrixOfCellPtr  &theRowVector,  MatrixOfCellPtr  &theColVector,  MatrixOfCellPtr  &theSqrVector){
-		return IsGood (theRowVector, theColVector, theSqrVector, IsGoodSolutionSequence);
+	static bool IsGoodSolution (const MatrixOfCellPtr * theSchema){
+        LogicAssert(true == IsGoodPtr(theSchema));
+		return IsGood (theSchema, IsGoodSolutionSequence);
 	}
 
-	static bool IsGoodSchema (MatrixOfCellPtr  &theRowVector,  MatrixOfCellPtr  &theColVector,  MatrixOfCellPtr  &theSqrVector){
-		return IsGood (theRowVector, theColVector, theSqrVector, IsGoodSchemaSequence);
+	static bool IsGoodSchema (const MatrixOfCellPtr * theSchema){
+        LogicAssert(true == IsGoodPtr(theSchema));
+		return IsGood (theSchema, IsGoodSchemaSequence);
 	}
 	
 	const std::size_t kIndexHelper [81][3]={
@@ -386,8 +389,9 @@ namespace isi{
 		return std::count (aValueVect, aValueVect + kDim, false);
 	}
 	
-	static unsigned short TransformIndex (const unsigned short theIndex, const Cell * theCell, const MatrixOfCellPtr &theRowVector, const MatrixOfCellPtr &theColVector, const MatrixOfCellPtr &theSqrVector){
+	static unsigned short TransformIndex (const unsigned short theIndex, const Cell * theCell, MatrixOfCellPtr * theSchema){
 		LogicAssert (true == IsGoodPtr (theCell));
+		LogicAssert (true == IsGoodPtr (theSchema));
 		static std::vector <std::pair <unsigned short, std::pair <ECellStatus, unsigned short> > > sTransformArray;
 		static bool sFirstTime = true;
 		if (sFirstTime){
@@ -397,14 +401,14 @@ namespace isi{
 				const std::size_t aColIndex = kIndexHelper [i][1] - 1;
 				const std::size_t aSqrIndex = kIndexHelper [i][2] - 1;
 #ifdef _DEBUG
-                const std::size_t aCountFreeRow = CountFree (theRowVector [aRowIndex]);
-                const std::size_t aCountFreeCol = CountFree (theColVector [aColIndex]);
-                const std::size_t aCountFreeSqr = CountFree (theSqrVector [aSqrIndex]);
+                const std::size_t aCountFreeRow = CountFree (theSchema [0][aRowIndex]);
+                const std::size_t aCountFreeCol = CountFree (theSchema [1][aColIndex]);
+                const std::size_t aCountFreeSqr = CountFree (theSchema [2][aSqrIndex]);
                 ISI_DUMP(aCountFreeRow);
                 ISI_DUMP(aCountFreeCol);
                 ISI_DUMP(aCountFreeSqr);
 #endif
-				const std::size_t aCountFreeFree = CountFreeFree (theRowVector [aRowIndex], theColVector [aColIndex], theSqrVector [aSqrIndex]);
+				const std::size_t aCountFreeFree = CountFreeFree (theSchema [0][aRowIndex], theSchema [1][aColIndex], theSchema [2][aSqrIndex]);
 				const std::pair <unsigned short, std::pair <ECellStatus, unsigned short> > aPair (i, std::pair <ECellStatus, unsigned short> (theCell [i].GetStatus (), aCountFreeFree));
 				sTransformArray.push_back (aPair);
 			}
@@ -417,11 +421,11 @@ namespace isi{
 		return sTransformArray [theIndex].first;
 	}
 	
-	static bool HandleNextRecursive (const unsigned short theIndex, Cell * theCell, MatrixOfCellPtr &theRowVector, MatrixOfCellPtr &theColVector, MatrixOfCellPtr &theSqrVector){
+	static bool HandleNextRecursive (const unsigned short theIndex, Cell * theCell, MatrixOfCellPtr * theSchema){
 		LogicAssert (true == IsGoodPtr (theCell));
-		LogicAssert (true == IsGoodSchema (theRowVector, theColVector, theSqrVector));
+		LogicAssert (true == IsGoodSchema (theSchema));
 
-		const unsigned short aTransformedIndex = TransformIndex (theIndex, theCell, theRowVector, theColVector, theSqrVector);
+		const unsigned short aTransformedIndex = TransformIndex (theIndex, theCell, theSchema);
 		gNumOfCall++;
 		if (theIndex >= kDim * kDim){
 			++gNumOfSolution;
@@ -430,8 +434,8 @@ namespace isi{
 				ISI_DUMP (aCurrentSolution);
 				ISI_DUMP (gNumOfCall);
 				ISI_DUMP (static_cast <double >(gNumOfCall)/aCurrentSolution);
-				DumpMatrix ("theRowVector", theRowVector);
-				ISI_DUMP (BoolToStr (IsGoodSolution (theRowVector, theColVector, theSqrVector)));
+				DumpMatrix ("theRowVector", theSchema [0]);
+				ISI_DUMP (BoolToStr (IsGoodSolution (theSchema)));
 			}
 			return false;
 		}
@@ -439,7 +443,7 @@ namespace isi{
 		LogicAssert (/*(theIndex >= 0) &&*/ (theIndex < kDim * kDim));
 		
 		if (theCell [aTransformedIndex].GetStatus () == eCellStatusConstantInputInitValue){
-			return HandleNextRecursive (NextIndex (theIndex), theCell, theRowVector, theColVector, theSqrVector); 
+			return HandleNextRecursive (NextIndex (theIndex), theCell, theSchema);
 		}
 
 		bool rit = false;
@@ -448,21 +452,21 @@ namespace isi{
 			LogicAssert (theCell [aTransformedIndex].GetValue () == 0);
 			
 			#ifdef _DEBUG
-			const std::size_t aRowIndex = kIndexHelper [aTransformedIndex][0] - 1; const bool aRowAvailable = isi::IsAvailable (theRowVector [aRowIndex], aValue + 1);
-			const std::size_t aColIndex = kIndexHelper [aTransformedIndex][1] - 1; const bool aColAvailable = isi::IsAvailable (theColVector [aColIndex], aValue + 1);
-			const std::size_t aSqrIndex = kIndexHelper [aTransformedIndex][2] - 1; const bool aSqrAvailable = isi::IsAvailable (theSqrVector [aSqrIndex], aValue + 1);
+			const std::size_t aRowIndex = kIndexHelper [aTransformedIndex][0] - 1; const bool aRowAvailable = isi::IsAvailable (theSchema [0][aRowIndex], aValue + 1);
+			const std::size_t aColIndex = kIndexHelper [aTransformedIndex][1] - 1; const bool aColAvailable = isi::IsAvailable (theSchema [1][aColIndex], aValue + 1);
+			const std::size_t aSqrIndex = kIndexHelper [aTransformedIndex][2] - 1; const bool aSqrAvailable = isi::IsAvailable (theSchema [2][aSqrIndex], aValue + 1);
 			const bool aGood = aRowAvailable && aColAvailable && aSqrAvailable;
 			#else
 			const std::size_t aRowIndex = kIndexHelper [aTransformedIndex][0] - 1;
 			const std::size_t aColIndex = kIndexHelper [aTransformedIndex][1] - 1;
 			const std::size_t aSqrIndex = kIndexHelper [aTransformedIndex][2] - 1;
-			const bool aGood = isi::IsAvailable (theRowVector [aRowIndex], aValue + 1) &&
-				isi::IsAvailable (theColVector [aColIndex], aValue + 1) &&
-				isi::IsAvailable (theSqrVector [aSqrIndex], aValue + 1);
+			const bool aGood = isi::IsAvailable (theSchema [0][aRowIndex], aValue + 1) &&
+				isi::IsAvailable (theSchema [1][aColIndex], aValue + 1) &&
+				isi::IsAvailable (theSchema [2][aSqrIndex], aValue + 1);
 			#endif
 			if (aGood){
 				theCell [aTransformedIndex].SetValue (aValue + 1);
-				rit = HandleNextRecursive (NextIndex (theIndex), theCell, theRowVector, theColVector, theSqrVector); 
+				rit = HandleNextRecursive (NextIndex (theIndex), theCell, theSchema);
 				if (rit){
 					break;
 				}
@@ -597,8 +601,11 @@ namespace isi{
 		isi::DumpMatrix ("aSqr", aSqr);
 		#endif
 
-		RuntimeAssert (true == IsGoodSchema (aRow, aCol, aSqr));
-		(void) isi::HandleNextRecursive (0, aCell, aRow, aCol, aSqr);
+        MatrixOfCellPtr aSchema []={
+            aRow, aCol, aSqr
+        };
+		RuntimeAssert (true == IsGoodSchema (aSchema));
+		(void) isi::HandleNextRecursive (0, aCell, aSchema);
 
 		isi::ISI_DUMP (isi::gNumOfCall);
 		isi::ISI_DUMP (isi::gNumOfSolution);
