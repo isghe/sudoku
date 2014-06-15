@@ -416,12 +416,18 @@ namespace isi{
     static bool IsGoodSchemaAvailable (const MatrixOfCellPtr * theSchema, const CellValue theValue, const unsigned short theTransformedIndex){
 		LogicAssert (true == IsGoodPtr (theSchema));
 		LogicAssert (true == IsGoodSchema (theSchema));
+#ifdef _DEBUG
         bool aGood = true;
-        for (int i = 0; i < 3; ++i){
+        for (int i = 0; i < 3 && aGood; ++i){
             const std::size_t aIndex = kIndexHelper [theTransformedIndex][i] - 1;
-            aGood = aGood && isi::IsAvailable (theSchema [i][aIndex], theValue + 1);
+            aGood = isi::IsAvailable (theSchema [i][aIndex], theValue + 1);
         }
         return aGood;
+#else
+        return isi::IsAvailable (theSchema [0][kIndexHelper [theTransformedIndex][0] - 1], theValue + 1)
+        && isi::IsAvailable (theSchema [1][kIndexHelper [theTransformedIndex][1] - 1], theValue + 1)
+        && isi::IsAvailable (theSchema [2][kIndexHelper [theTransformedIndex][2] - 1], theValue + 1);
+#endif
     }
 
 	static bool HandleNextRecursive (const unsigned short theIndex, Cell * theCell, MatrixOfCellPtr * theSchema){
