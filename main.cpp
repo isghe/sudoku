@@ -214,8 +214,8 @@ namespace isi{
 }
 
 namespace isi{
-	typedef std::vector <Cell *> CellVector;
-	typedef CellVector MatrixOfCellPtr [kDim];
+	typedef std::vector <Cell *> CellVector; // 376616
+	typedef std::vector <CellVector> MatrixOfCellPtr; // 352973
 	static void DumpMatrix (const char * theIdentifier, const MatrixOfCellPtr  &theMatrix){
 		LogicAssert (true == IsGoodPtr (theIdentifier));
 		std::cout << theIdentifier << ":" << std::endl;
@@ -548,7 +548,7 @@ namespace isi{
 		ISI_DUMP (std::count_if (aCell, aCell + kDim * kDim, IsInitValue));
 
 		// alias of rows
-		MatrixOfCellPtr aRow;
+		MatrixOfCellPtr aRow (kDim);
 		std::size_t i = 0;
 		std::size_t j = 0;
 		for (j = 0; j < kDim; ++j){
@@ -561,7 +561,7 @@ namespace isi{
 		isi::DumpMatrix ("aRow", aRow);
 		
 		// alias of columns
-		MatrixOfCellPtr aCol;
+		MatrixOfCellPtr aCol (kDim);
 		for (j = 0; j < kDim; ++j){
 			for (i = 0; i < kDim; ++i){
                 LogicAssert(IsInCRange <std::size_t>(0, i + j*kDim, IG_DIM_OF_ARRAY(aCell)));
@@ -570,7 +570,7 @@ namespace isi{
 		}
 		
 		// alias of square
-		MatrixOfCellPtr aSqr;
+		MatrixOfCellPtr aSqr (kDim);
 		const std::size_t aTransform [kDim][3] = {
         // it would be interesting automagically create this matrix at compile time, using pseudo programming
 			{0, 0, 0}, {1, 0, 3}, {2, 0, 6},
