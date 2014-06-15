@@ -380,7 +380,7 @@ namespace isi{
 
 	static std::size_t CountFreeFree (const CellVector theCellVector1, const CellVector theCellVector2, const CellVector theCellVector3){
 		bool aValueVect [kDim] = {false};
-		for (int i = 0; i < kDim; ++i){
+		for (std::size_t i = 0; i < kDim; ++i){
 			const unsigned short aVal1 = theCellVector1 [i]->GetValue ();
 			if (aVal1 > 0){
                 LogicAssert(IsInCRange <std::size_t>(0, aVal1 - 1, IG_DIM_OF_ARRAY(aValueVect)));
@@ -519,7 +519,7 @@ namespace isi{
 		ISI_DUMP (aFileString);
 		#endif
 		std::istringstream incoming_stream(aFileString);
-		for (int i = 0; i < kDim*kDim; ++i){
+		for (std::size_t i = 0; i < kDim*kDim; ++i){
 			CellValue aCellValue;
 			std::string aSeparetor;
 			incoming_stream >> aCellValue;
@@ -586,13 +586,14 @@ namespace isi{
 		Cell * aCol  [kDim][kDim] = {{NULL}};
 		for (j = 0; j < kDim; ++j){
 			for (i = 0; i < kDim; ++i){
+                LogicAssert(IsInCRange <std::size_t>(0, i + j*kDim, IG_DIM_OF_ARRAY(aCell)));
 				aCol [i][j] = &aCell [i + j*kDim];
 			}
 		}
 		
 		// alias of square
 		Cell * aSqr [kDim][kDim] = {{NULL}};
-		const int aTransform [kDim][3] = {
+		const std::size_t aTransform [kDim][3] = {
 			{0, 0, 0}, {1, 0, 3}, {2, 0, 6},
 			{3, 3, 0}, {4, 3, 3}, {5, 3, 6},
 			{6, 6, 0}, {7, 6, 3}, {8, 6, 6}
@@ -635,8 +636,9 @@ Apple LLVM version 5.1 (clang-503.0.40) (based on LLVM 3.4svn)
 Target: x86_64-apple-darwin13.2.0
 Thread model: posix
 
- $ g++ -O3 -Wall -ansi -pedantic main.cpp -o sudoku.out
- $ g++ -g -Wall -ansi -pedantic -D_DEBUG main.cpp -o sudoku_d.out
+ $ make
+g++ -Wall -ansi -pedantic -Wextra -O3 main.cpp -o sudoku.out
+g++ -Wall -ansi -pedantic -Wextra -g -D_DEBUG main.cpp -o sudoku_d.out
 
  run:
  $ ./sudoku.out example/diabolikus_08062008.sdk

@@ -7,7 +7,7 @@ Created in 2005, ported in 2014 on Mavericks Mac OS X 10.9
 
 to compile:
 
-$ g++ -O3 -Wall -ansi -pedantic main.cpp -o sudoku.out
+$ make
 
 to run:
 
