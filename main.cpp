@@ -241,7 +241,7 @@ namespace isi{
 		}
 	};
 
-	static bool IsAvailable (CellVector theCellVector, const CellValue theCellValue){
+	static bool IsAvailable (CellVector &theCellVector, const CellValue theCellValue){
         LogicAssert ((theCellValue >= 1) && (theCellValue <= 9));
 
         CellVector::iterator aIterResult = std::find_if (theCellVector.begin (), theCellVector.end () , SFindHelper (theCellValue));
