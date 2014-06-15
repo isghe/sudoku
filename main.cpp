@@ -374,7 +374,7 @@ namespace isi{
                 }
             }
 		}
-		
+
 		return std::count (aValueVect, aValueVect + kDim, false);
 	}
 	
@@ -521,8 +521,8 @@ namespace isi{
 			0
 		};
 		LoadCellValuesFromFile (theFileName, kCellValue);
-		// return;
-		#else
+
+        #else
 		const CellValue kCellValue [kDim * kDim]={
 			0, 0, 6, 0, 5, 0, 8, 0, 2,
 			0, 0, 8, 0, 0, 4, 5, 0, 9,
