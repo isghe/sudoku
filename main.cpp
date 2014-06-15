@@ -214,7 +214,7 @@ namespace isi{
 }
 
 namespace isi{
-	typedef Cell * CellVector [kDim];
+	typedef std::vector <Cell *> CellVector;
 	typedef CellVector MatrixOfCellPtr [kDim];
 	static void DumpMatrix (const char * theIdentifier, const MatrixOfCellPtr  &theMatrix){
 		LogicAssert (true == IsGoodPtr (theIdentifier));
@@ -351,7 +351,7 @@ namespace isi{
 	}
 	
 	static std::size_t CountFree (const CellVector &theCellVector){
-		return std::count_if (theCellVector, theCellVector + kDim, MyCountFree);
+		return std::count_if (theCellVector.begin (), theCellVector.end (), MyCountFree);
 	}
 #endif
 
@@ -548,29 +548,29 @@ namespace isi{
 		ISI_DUMP (std::count_if (aCell, aCell + kDim * kDim, IsInitValue));
 
 		// alias of rows
-		MatrixOfCellPtr aRow = {{NULL}};
+		MatrixOfCellPtr aRow;
 		std::size_t i = 0;
 		std::size_t j = 0;
 		for (j = 0; j < kDim; ++j){
 			for (i = 0; i < kDim; ++i){
                 LogicAssert(IsInCRange <std::size_t>(0, i + j*kDim, IG_DIM_OF_ARRAY(aCell)));
-				aRow [j][i] = &aCell [i + j*kDim];
+				aRow [j].push_back(&aCell [i + j*kDim]);
 			}
 		}
 		
 		isi::DumpMatrix ("aRow", aRow);
 		
 		// alias of columns
-		MatrixOfCellPtr aCol = {{NULL}};
+		MatrixOfCellPtr aCol;
 		for (j = 0; j < kDim; ++j){
 			for (i = 0; i < kDim; ++i){
                 LogicAssert(IsInCRange <std::size_t>(0, i + j*kDim, IG_DIM_OF_ARRAY(aCell)));
-				aCol [i][j] = &aCell [i + j*kDim];
+				aCol [i].push_back(&aCell [i + j*kDim]);
 			}
 		}
 		
 		// alias of square
-		MatrixOfCellPtr aSqr = {{NULL}};
+		MatrixOfCellPtr aSqr;
 		const std::size_t aTransform [kDim][3] = {
         // it would be interesting automagically create this matrix at compile time, using pseudo programming
 			{0, 0, 0}, {1, 0, 3}, {2, 0, 6},
@@ -586,7 +586,7 @@ namespace isi{
                     LogicAssert(IsInCRange <std::size_t>(0, b, kDim));
                     LogicAssert(IsInCRange <std::size_t>(0, j, kDim));
                     LogicAssert(IsInCRange <std::size_t>(0, aIndex, kDim));
-					aSqr [j][aIndex] = aRow [a] [b];
+					aSqr [j].push_back (aRow [a] [b]);
 					++aIndex;	
 				}
 			}
