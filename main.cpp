@@ -413,8 +413,20 @@ namespace isi{
 		return sTransformArray [theIndex].first;
 	}
 	
+    static bool IsGoodSchemaAvailable (const MatrixOfCellPtr * theSchema, const CellValue theValue, const unsigned short theTransformedIndex){
+		LogicAssert (true == IsGoodPtr (theSchema));
+		LogicAssert (true == IsGoodSchema (theSchema));
+        bool aGood = true;
+        for (int i = 0; i < 3; ++i){
+            const std::size_t aIndex = kIndexHelper [theTransformedIndex][i] - 1;
+            aGood = aGood && isi::IsAvailable (theSchema [i][aIndex], theValue + 1);
+        }
+        return aGood;
+    }
+
 	static bool HandleNextRecursive (const unsigned short theIndex, Cell * theCell, MatrixOfCellPtr * theSchema){
 		LogicAssert (true == IsGoodPtr (theCell));
+		LogicAssert (true == IsGoodPtr (theSchema));
 		LogicAssert (true == IsGoodSchema (theSchema));
 
 		const unsigned short aTransformedIndex = TransformIndex (theIndex, theCell, theSchema);
@@ -442,20 +454,8 @@ namespace isi{
 		for (CellValue aValue = 0; aValue < kDim; ++aValue){
 			LogicAssert (theCell [aTransformedIndex].GetValue () != aValue+1);
 			LogicAssert (theCell [aTransformedIndex].GetValue () == 0);
-            // TODO: use a loop
-			#ifdef _DEBUG
-			const std::size_t aRowIndex = kIndexHelper [aTransformedIndex][0] - 1; const bool aRowAvailable = isi::IsAvailable (theSchema [0][aRowIndex], aValue + 1);
-			const std::size_t aColIndex = kIndexHelper [aTransformedIndex][1] - 1; const bool aColAvailable = isi::IsAvailable (theSchema [1][aColIndex], aValue + 1);
-			const std::size_t aSqrIndex = kIndexHelper [aTransformedIndex][2] - 1; const bool aSqrAvailable = isi::IsAvailable (theSchema [2][aSqrIndex], aValue + 1);
-			const bool aGood = aRowAvailable && aColAvailable && aSqrAvailable;
-			#else
-			const std::size_t aRowIndex = kIndexHelper [aTransformedIndex][0] - 1;
-			const std::size_t aColIndex = kIndexHelper [aTransformedIndex][1] - 1;
-			const std::size_t aSqrIndex = kIndexHelper [aTransformedIndex][2] - 1;
-			const bool aGood = isi::IsAvailable (theSchema [0][aRowIndex], aValue + 1) &&
-				isi::IsAvailable (theSchema [1][aColIndex], aValue + 1) &&
-				isi::IsAvailable (theSchema [2][aSqrIndex], aValue + 1);
-			#endif
+
+            const bool aGood = IsGoodSchemaAvailable (theSchema, aValue, aTransformedIndex);
 			if (aGood){
 				theCell [aTransformedIndex].SetValue (aValue + 1);
 				rit = HandleNextRecursive (NextIndex (theIndex), theCell, theSchema);
