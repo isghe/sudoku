@@ -293,29 +293,6 @@ namespace isi{
 		return rit;		
 	}
 	
-	/*
-	static bool IsGoodSolution (MatrixOfCellPtr  &theRowVector,  MatrixOfCellPtr  &theColVector,  MatrixOfCellPtr  &theSqrVector){
-		bool rit = true;
-		for (std::size_t i = 0; i < kDim && rit; ++i){
-			rit = IsGoodSolutionSequence (theRowVector [i]) &&
-				IsGoodSolutionSequence (theColVector [i]) &&
-				IsGoodSolutionSequence (theSqrVector [i]);
-		}
-		return rit;
-	}
-
-	static bool IsGoodSchema (MatrixOfCellPtr  &theRowVector,  MatrixOfCellPtr  &theColVector,  MatrixOfCellPtr  &theSqrVector){
-		bool rit = true;
-		for (std::size_t i = 0; i < kDim && rit; ++i){
-			// ISI_DUMP (i);
-			rit = IsGoodSchemaSequence (theRowVector [i]) &&
-				IsGoodSchemaSequence (theColVector [i]) &&
-				IsGoodSchemaSequence (theSqrVector [i]);
-		}
-		return rit;
-	}
-	*/
-	
 	static bool IsGoodSolution (MatrixOfCellPtr  &theRowVector,  MatrixOfCellPtr  &theColVector,  MatrixOfCellPtr  &theSqrVector){
 		return IsGood (theRowVector, theColVector, theSqrVector, IsGoodSolutionSequence);
 	}
@@ -325,6 +302,7 @@ namespace isi{
 	}
 	
 	const std::size_t kIndexHelper [81][3]={
+    // it would be interesting automagically create this matrix at compile time, using pseudo programming
 		{1, 1, 1}, {1, 2, 1}, {1, 3, 1}, {1, 4, 2}, {1, 5, 2}, {1, 6, 2}, {1, 7, 3}, {1, 8, 3}, {1, 9, 3},
 		{2, 1, 1}, {2, 2, 1}, {2, 3, 1}, {2, 4, 2}, {2, 5, 2}, {2, 6, 2}, {2, 7, 3}, {2, 8, 3}, {2, 9, 3},
 		{3, 1, 1}, {3, 2, 1}, {3, 3, 1}, {3, 4, 2}, {3, 5, 2}, {3, 6, 2}, {3, 7, 3}, {3, 8, 3}, {3, 9, 3},
@@ -594,6 +572,7 @@ namespace isi{
 		// alias of square
 		MatrixOfCellPtr aSqr = {{NULL}};
 		const std::size_t aTransform [kDim][3] = {
+        // it would be interesting automagically create this matrix at compile time, using pseudo programming
 			{0, 0, 0}, {1, 0, 3}, {2, 0, 6},
 			{3, 3, 0}, {4, 3, 3}, {5, 3, 6},
 			{6, 6, 0}, {7, 6, 3}, {8, 6, 6}
