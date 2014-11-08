@@ -148,10 +148,12 @@ namespace isi{
 		private:
 		CellValue fValue;
 		CellStatus fStatus; // 0: variable, 1: constant init input value;
-		
+
+		#ifdef _DEBUG
 		private:
 		bool IsGoodData (void) const;
-
+		#endif
+		
 		public:
 		void SetInitValue (const CellValue theValue);
 
@@ -175,6 +177,7 @@ namespace isi{
 	SCell::~SCell (void){
 	}
 
+	#ifdef _DEBUG
 	bool SCell::IsGoodData (void) const{
 		const bool ret =  ((eCellStatusConstantInputInitValue == fStatus) && ((fValue > 0) && (fValue <=9)))
 			||
@@ -185,6 +188,7 @@ namespace isi{
 		}
 		return ret;
 	}
+	#endif
 
 	CellValue SCell::GetValue (void) const{
 		LogicAssert (true == this->IsGoodData ());
