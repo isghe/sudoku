@@ -6,7 +6,7 @@
 //
 // Lissone (MB), Italy
 // Sat Jun 14 16:12:24 CEST 2014
-// Copyright 2005-2014, Isidoro Ghezzi
+// Copyright 2005-2015, Isidoro Ghezzi
 // isidoro.ghezzi@icloud.com
 //
 // Porting to mavericks, Mac OS X 10.9
