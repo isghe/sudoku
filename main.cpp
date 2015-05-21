@@ -9,10 +9,13 @@
 // Copyright 2005-2015, Isidoro Ghezzi
 // isidoro.ghezzi@icloud.com
 //
-// Porting to mavericks, Mac OS X 10.9
+// Porting to:
+// 	mavericks, Mac OS X 10.9
+//	yosemite, OS X 10.10.3
 //
 
-#include <iostream>
+#include "common.h"
+
 #include <math.h>
 #include <algorithm>
 #include <functional>
@@ -21,118 +24,6 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-
-namespace isi{
-	namespace prv{
-		template <class TObject>
-		void Dump (const char * theFunctionName, const char * theExpression, const TObject &theValue){
-			std::cout << theFunctionName << ": " << theExpression << ": " << theValue << ";" << std::endl;
-		}
-	}
-
-	template <class TObject>
-	void DumpMacro (const char * theIdentifier, const TObject &theValue){
-		std::cout << theIdentifier << ": " << theValue << ";" << std::endl;
-	}
-	
-	#define ISI_MK_STR(theExpression) (#theExpression)
-	
-	#ifdef __GNUC__
-	#ifdef _DEBUG
-	#define ISI_DUMP(theExpression) prv::Dump (__PRETTY_FUNCTION__, ISI_MK_STR(theExpression), (theExpression))
-	#else
-	#define ISI_DUMP(theExpression) prv::Dump (__func__, ISI_MK_STR(theExpression), (theExpression))
-	#endif
-	#else
-	#define ISI_DUMP(theExpression) prv::Dump ("noname", ISI_MK_STR(theExpression), (theExpression))
-	#endif
-}
-namespace ig{
-#ifdef IG_DIM_OF_ARRAY
-#error "IG_DIM_OF_ARRAY already defined"
-#endif
-
-#define IG_DIM_OF_ARRAY(theArray) (sizeof((theArray))/sizeof(*(theArray)))
-}
-
-namespace isi{
-	static void HandleStdException (const std::exception &theException){
-		ISI_DUMP (theException.what ());
-	}
-
-	static void HandleUnknownException (void){
-		ISI_DUMP (__FILE__);
-	}
-
-	template <class TException>
-	void PrivateAssert (const char * theFunctionName, const char * theExpression, const bool theAssertion, const char * theFileName, const int theLine){
-		if (false == theAssertion){
-			ISI_DUMP (theExpression);
-			ISI_DUMP (theFileName);
-			ISI_DUMP (theLine);
-			ISI_DUMP (theFunctionName);
-			throw TException (theExpression);
-		}
-	}
-
-	#ifdef __GNUC__
-	#define RuntimeAssert(theAssertion) PrivateAssert <std::runtime_error> (__PRETTY_FUNCTION__, ISI_MK_STR (theAssertion), (theAssertion), __FILE__, __LINE__)
-	#else
-	#define RuntimeAssert(theAssertion) PrivateAssert <std::runtime_error> ("noname", ISI_MK_STR (theAssertion), (theAssertion), __FILE__, __LINE__)
-	#endif
-	
-	#ifdef _DEBUG
-	#ifdef __GNUC__
-	#define LogicAssert(theAssertion) PrivateAssert <std::logic_error> (__PRETTY_FUNCTION__, ISI_MK_STR (theAssertion), (theAssertion), __FILE__, __LINE__)
-	#else
-	#define LogicAssert(theAssertion) PrivateAssert <std::logic_error> ("noname", ISI_MK_STR (theAssertion), (theAssertion), __FILE__, __LINE__)
-	#endif
-	#else
-	static inline void DoNothing (void){
-	}
-	#define LogicAssert(theAssertion)  DoNothing ()
-	#endif
-}
-
-namespace isi{
-	template <class TObject>
-	bool IsGoodPtr (const TObject * theObject){
-		return NULL != theObject;
-	}
-
-	static const char * BoolToStr (const bool theBool){
-		const char * kVett []={
-			"false",
-			"true"
-		};
-
-		return kVett [theBool];
-	}
-
-	static bool IsDebugVersion (void){
-		#ifdef _DEBUG
-		return true;
-		#else
-		return false;
-		#endif
-	}
-	
-	static double GetGnuVersion (void){
-		#ifdef __GNUC__
-		return __GNUC__;
-		#else
-		return 0;
-		#endif
-	}
-}
-
-namespace isi{
-    template <typename TNumeric>
-    bool IsInCRange (const TNumeric theMin, const TNumeric theValue, const TNumeric theSup){
-        LogicAssert(theSup > theMin);
-        return (theValue >= theMin) && (theValue < theSup);
-    }
-}
 
 namespace isi{
 	typedef unsigned short CellValue;
@@ -618,10 +509,14 @@ namespace isi{
 int main (int argc, char* argv []){
 /*
 	compile:
+
+ $ uname -a
+Darwin Isidoros-MacBook-Pro.local 14.3.0 Darwin Kernel Version 14.3.0: Mon Mar 23 11:59:05 PDT 2015; root:xnu-2782.20.48~5/RELEASE_X86_64 x86_64
+
  $ g++ --version
-Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/4.2.1
-Apple LLVM version 5.1 (clang-503.0.40) (based on LLVM 3.4svn)
-Target: x86_64-apple-darwin13.2.0
+Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include/c++/4.2.1
+Apple LLVM version 6.1.0 (clang-602.0.53) (based on LLVM 3.6.0svn)
+Target: x86_64-apple-darwin14.3.0
 Thread model: posix
 
  $ make
@@ -632,8 +527,8 @@ g++ -Wall -ansi -pedantic -Wextra -g -D_DEBUG main.cpp -o sudoku_d.out
  $ ./sudoku.out example/diabolikus_08062008.sdk
 main: isi::GetGnuVersion (): 4;
 __FILE__: main.cpp;
-__DATE__: Jun 14 2014;
-__TIME__: 17:33:25;
+__DATE__: May 21 2015;
+__TIME__: 18:50:56;
 main: isi::BoolToStr (isi::IsDebugVersion ()): false;
 my_main: theFileName: example/diabolikus_08062008.sdk;
 my_main: std::count_if (aCell, aCell + kDim * kDim, IsInitValue): 26;
@@ -660,11 +555,11 @@ theRowVector:
 	9, 	6, 	8, 	2, 	1, 	5, 	7, 	3, 	4, 
 	2, 	7, 	3, 	6, 	8, 	4, 	1, 	9, 	5, 
 	1, 	5, 	4, 	9, 	7, 	3, 	2, 	8, 	6, 
-HandleNextRecursive: BoolToStr (IsGoodSolution (theRowVector, theColVector, theSqrVector)): true;
+HandleNextRecursive: BoolToStr (IsGoodSolution (theSchema)): true;
 my_main: isi::gNumOfCall: 21669;
 my_main: isi::gNumOfSolution: 1;
 main: rit: 0;
-main: std::clock () - aStart: 2960;
+main: std::clock () - aStart: 7473;
 */
 	const std::clock_t aStart = std::clock ();
 	volatile int rit = 1;
