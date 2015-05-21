@@ -3,7 +3,7 @@ sudoku
 
 C++ Sudoku solver
 
-Created in 2005, ported in 2014 on Mavericks Mac OS X 10.9
+Created in 2005, ported in 2014 on Mavericks Mac OS X 10.9, Yosemite, OS X 10.10.3
 
 to compile:
 

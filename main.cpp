@@ -10,8 +10,8 @@
 // isidoro.ghezzi@icloud.com
 //
 // Porting to:
-// 	mavericks, Mac OS X 10.9
-//	yosemite, OS X 10.10.3
+//  mavericks, Mac OS X 10.9
+//  yosemite, OS X 10.10.3
 //
 
 #include "common.h"
