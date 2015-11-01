@@ -12,6 +12,7 @@
 // Porting to:
 //  mavericks, Mac OS X 10.9
 //  yosemite, OS X 10.10.3
+//  OS X El Capitan 10.11.1
 //
 
 #include "common.h"
