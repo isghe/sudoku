@@ -6,13 +6,13 @@
 //
 // Lissone (MB), Italy
 // Sat Jun 14 16:12:24 CEST 2014
-// Copyright 2005-2015, Isidoro Ghezzi
+// Copyright 2005-2016, Isidoro Ghezzi
 // isidoro.ghezzi@icloud.com
 //
 // Porting to:
 //  mavericks, Mac OS X 10.9
 //  yosemite, OS X 10.10.3
-//  OS X El Capitan 10.11.1
+//  OS X El Capitan 10.11.5
 //
 
 #include "common.h"
