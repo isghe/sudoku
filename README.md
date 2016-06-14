@@ -7,11 +7,11 @@ Created in 2005, ported to Mavericks Mac OS X 10.9, Yosemite OS X 10.10.3, OS X 
 
 to compile:
 
-$ make
+`$ make`
 
 to run:
 
-$ ./sudoku.out example/sample1.sdk
+`$ ./sudoku.out example/sample1.sdk`
 
 read the instructions in the comment of the function main (at the end of file main.cpp)
 
