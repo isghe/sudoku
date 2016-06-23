@@ -25,6 +25,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cstring>
 
 namespace isi{
 	typedef unsigned short CellValue;

@@ -19,6 +19,7 @@
 #define common_h
 
 #include <iostream>
+#include <stdexcept>
 
 #ifndef __cplusplus
 #error "C++ needed"
