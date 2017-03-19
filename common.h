@@ -6,7 +6,7 @@
 //
 // Lissone (MB), Italy
 // Sat Jun 14 16:12:24 CEST 2014
-// Copyright 2005-2016, Isidoro Ghezzi
+// Copyright 2005-2017, Isidoro Ghezzi
 // isidoro.ghezzi@icloud.com
 //
 // Porting to:
