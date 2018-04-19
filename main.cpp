@@ -12,7 +12,7 @@
 // Porting to:
 //  mavericks, Mac OS X 10.9
 //  yosemite, OS X 10.10.3
-//  OS X El Capitan 10.11.5
+//  OS X El Capitan 10.11.6
 //  macOS High Sierra 10.13.4
 //
 
@@ -26,6 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cstring>
 
 namespace isi{
 	typedef unsigned short CellValue;
