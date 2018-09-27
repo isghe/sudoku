@@ -5,10 +5,10 @@ EXECUTABLE = sudoku
 all: release debug
 
 debug: Makefile main.cpp common.h
-	$(CC) $(CFLAGS) -g -D_DEBUG main.cpp -o $(EXECUTABLE)_d.out
+	$(CC) $(CFLAGS) -std=c++11 -g -D_DEBUG main.cpp -o $(EXECUTABLE)_d.out
 
 release: Makefile main.cpp common.h
-	$(CC) $(CFLAGS) -O3 main.cpp -o $(EXECUTABLE).out
+	$(CC) $(CFLAGS) -std=c++11 -O3 main.cpp -o $(EXECUTABLE).out
 
 .PHONY: clean
 clean:
