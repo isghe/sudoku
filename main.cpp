@@ -36,7 +36,23 @@ namespace isi{
 		Variable
 	};
 
+	typedef std::pair <CellStatus, CellValue> CellStatusWithValue;
+
 	#define CAST_CELL_STATUS_TO_CELLVALUE(cellStatus) static_cast<CellValue>(cellStatus)
+
+	#if _DEBUG
+	namespace cellstatus{
+		const char * Label (const CellStatus theCellStatus){
+			switch (theCellStatus){
+				case CellStatus::ConstantInputInitValue:
+					return "ConstantInputInitValue";
+				case CellStatus::Variable:
+					return "Variable";
+			}
+			LogicAssert (false);
+		}
+	}
+	#endif
 
 	struct SCell{
 		private:
@@ -77,7 +93,7 @@ namespace isi{
 			||
 			((CellStatus::Variable == fStatus)  && (/* (fValue >= 0) &&*/ (fValue <=9)));
 		if (false == ret){
-			ISI_DUMP (CAST_CELL_STATUS_TO_CELLVALUE (fStatus));
+			ISI_DUMP (cellstatus::Label (fStatus));
 			ISI_DUMP (fValue);
 		}
 		return ret;
@@ -230,18 +246,18 @@ namespace isi{
 		return theIndex + 1;
 	}
 	
-	static int CalcSortValue (const std::pair <CellStatus, CellValue> &thePair){
+	static int CalcSortValue (const CellStatusWithValue &thePair){
 		return CAST_CELL_STATUS_TO_CELLVALUE (thePair.first) * 1000 + thePair.second;
 	}
 	
-	static bool MyCompare (const std::pair <unsigned short, std::pair <CellStatus, CellValue> > &thePair1,  const std::pair <unsigned short, std::pair <CellStatus, CellValue> > &thePair2){
+	static bool MyCompare (const std::pair <unsigned short, CellStatusWithValue> &thePair1,  const std::pair <unsigned short, CellStatusWithValue> &thePair2){
 		return  CalcSortValue (thePair2.second) >  CalcSortValue (thePair1.second);
 	}
 
 #ifdef _DEBUG
-	static bool MyDump (const std::pair <unsigned short, std::pair <CellStatus, CellValue> > &thePair){
+	static bool MyDump (const std::pair <unsigned short, CellStatusWithValue> &thePair){
 		ISI_DUMP (thePair.first);
-		ISI_DUMP (CAST_CELL_STATUS_TO_CELLVALUE (thePair.second.first));
+		ISI_DUMP (cellstatus::Label (thePair.second.first));
 		ISI_DUMP (thePair.second.second);
 		return true;
 	}
@@ -279,7 +295,7 @@ namespace isi{
 	static unsigned short TransformIndex (const unsigned short theIndex, const Cell * theCell, MatrixOfCellPtr * theSchema){
 		LogicAssert (true == IsGoodPtr (theCell));
 		LogicAssert (true == IsGoodPtr (theSchema));
-		static std::vector <std::pair <unsigned short, std::pair <CellStatus, CellValue> > > sTransformArray;
+		static std::vector <std::pair <unsigned short, CellStatusWithValue> > sTransformArray;
 		static bool sFirstTime = true;
 		if (sFirstTime){
 			sFirstTime = false;
@@ -299,7 +315,7 @@ namespace isi{
                     &theSchema [0][aRowIndex], &theSchema [1][aColIndex], &theSchema [2][aSqrIndex]
                 };
 				const std::size_t aCountFreeFree = CountFreeFree (aMatrix);
-				const std::pair <unsigned short, std::pair <CellStatus, CellValue> > aPair (i, std::pair <CellStatus, CellValue> (theCell [i].GetStatus (), aCountFreeFree));
+				const std::pair <unsigned short, CellStatusWithValue> aPair (i, CellStatusWithValue (theCell [i].GetStatus (), aCountFreeFree));
 				sTransformArray.push_back (aPair);
 			}
 			std::sort (sTransformArray.begin (), sTransformArray.end (), MyCompare);
