@@ -41,7 +41,7 @@ namespace isi{
 	struct SCell{
 		private:
 		CellValue fValue;
-		CellStatus fStatus; // 0: variable, 1: constant init input value;
+		CellStatus fStatus;
 
 		#ifdef _DEBUG
 		private:
@@ -203,7 +203,7 @@ namespace isi{
 	}
 	
 	const std::size_t kIndexHelper [81][3]={
-    // it would be interesting automagically create this matrix at compile time, using pseudo programming
+    // it would be interesting automagically create this matrix at compile time, using meta programming
 		{1, 1, 1}, {1, 2, 1}, {1, 3, 1}, {1, 4, 2}, {1, 5, 2}, {1, 6, 2}, {1, 7, 3}, {1, 8, 3}, {1, 9, 3},
 		{2, 1, 1}, {2, 2, 1}, {2, 3, 1}, {2, 4, 2}, {2, 5, 2}, {2, 6, 2}, {2, 7, 3}, {2, 8, 3}, {2, 9, 3},
 		{3, 1, 1}, {3, 2, 1}, {3, 3, 1}, {3, 4, 2}, {3, 5, 2}, {3, 6, 2}, {3, 7, 3}, {3, 8, 3}, {3, 9, 3},
@@ -230,19 +230,19 @@ namespace isi{
 		return theIndex + 1;
 	}
 	
-	static int CalcSortValue (const std::pair <CellStatus, unsigned short> &thePair){
+	static int CalcSortValue (const std::pair <CellStatus, CellValue> &thePair){
 		return CAST_CELL_STATUS_TO_CELLVALUE (thePair.first) * 1000 + thePair.second;
 	}
 	
-	static bool MyCompare (const std::pair <unsigned short, std::pair <CellStatus, unsigned short> > &thePair1,  const std::pair <unsigned short, std::pair <CellStatus, unsigned short> > &thePair2){
+	static bool MyCompare (const std::pair <unsigned short, std::pair <CellStatus, CellValue> > &thePair1,  const std::pair <unsigned short, std::pair <CellStatus, CellValue> > &thePair2){
 		return  CalcSortValue (thePair2.second) >  CalcSortValue (thePair1.second);
 	}
 
 #ifdef _DEBUG
-	static bool MyDump (const std::pair <unsigned short, std::pair <CellStatus, unsigned short> > &thePair){
+	static bool MyDump (const std::pair <unsigned short, std::pair <CellStatus, CellValue> > &thePair){
 		ISI_DUMP (thePair.first);
 		ISI_DUMP (CAST_CELL_STATUS_TO_CELLVALUE (thePair.second.first));
-		ISI_DUMP (CAST_CELL_STATUS_TO_CELLVALUE (thePair.second.second));
+		ISI_DUMP (thePair.second.second);
 		return true;
 	}
 
@@ -279,7 +279,7 @@ namespace isi{
 	static unsigned short TransformIndex (const unsigned short theIndex, const Cell * theCell, MatrixOfCellPtr * theSchema){
 		LogicAssert (true == IsGoodPtr (theCell));
 		LogicAssert (true == IsGoodPtr (theSchema));
-		static std::vector <std::pair <unsigned short, std::pair <CellStatus, unsigned short> > > sTransformArray;
+		static std::vector <std::pair <unsigned short, std::pair <CellStatus, CellValue> > > sTransformArray;
 		static bool sFirstTime = true;
 		if (sFirstTime){
 			sFirstTime = false;
@@ -299,7 +299,7 @@ namespace isi{
                     &theSchema [0][aRowIndex], &theSchema [1][aColIndex], &theSchema [2][aSqrIndex]
                 };
 				const std::size_t aCountFreeFree = CountFreeFree (aMatrix);
-				const std::pair <unsigned short, std::pair <CellStatus, unsigned short> > aPair (i, std::pair <CellStatus, unsigned short> (theCell [i].GetStatus (), aCountFreeFree));
+				const std::pair <unsigned short, std::pair <CellStatus, CellValue> > aPair (i, std::pair <CellStatus, CellValue> (theCell [i].GetStatus (), aCountFreeFree));
 				sTransformArray.push_back (aPair);
 			}
 			std::sort (sTransformArray.begin (), sTransformArray.end (), MyCompare);
@@ -472,7 +472,7 @@ namespace isi{
 		// alias of square
 		MatrixOfCellPtr aSqr (kDim);
 		const std::size_t aTransform [kDim][3] = {
-        // it would be interesting automagically create this matrix at compile time, using pseudo programming
+        // it would be interesting automagically create this matrix at compile time, using meta programming
 			{0, 0, 0}, {1, 0, 3}, {2, 0, 6},
 			{3, 3, 0}, {4, 3, 3}, {5, 3, 6},
 			{6, 6, 0}, {7, 6, 3}, {8, 6, 6}
