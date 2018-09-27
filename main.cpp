@@ -589,7 +589,7 @@ main: std::clock () - aStart: 7473;
 		isi::HandleUnknownException ();
 	}
 	isi::ISI_DUMP (rit);
-	isi::ISI_DUMP (std::clock () - aStart);
+	isi::ISI_DUMP (static_cast <double> ((std::clock () - aStart))/CLOCKS_PER_SEC);
 	
 	return rit;
 }
