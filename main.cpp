@@ -161,25 +161,31 @@ namespace isi{
         const CellVector::const_iterator aIterResult = std::find_if (theCellVector.begin (), theCellVector.end () , SFindHelper (theCellValue));
         return  theCellVector.end () == aIterResult;
 	}
-
+#if 1
 	struct SCountHelper: public std::binary_function <bool, Cell *, CellValue>{
 		const CellValue fCellValue;
-		bool operator () (Cell * theIter) const{
+		bool operator () (const Cell * theIter) const{
 			LogicAssert (true == IsGoodPtr (theIter));
 			return theIter->GetValue () == fCellValue;
 		}
 
-		SCountHelper (const CellValue theCellValue):
+		explicit SCountHelper (const CellValue theCellValue):
 		fCellValue (theCellValue){
 			LogicAssert (/*(theCellValue >= 0) &&*/ (theCellValue <= 9));
 		}
 	};
-
+#endif
 	static bool IsGoodSchemaSequence (const CellVector &theCellVector){
 		size_t aNumTotal = std::count_if (theCellVector.begin (), theCellVector.end (), SCountHelper (0));
 		bool rit = true;
 		for (CellValue aCellValue = 0; aCellValue < kDim && rit; ++aCellValue){
 			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end (), SCountHelper (aCellValue + 1));
+			/*
+			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end () , [aCellValue] (const Cell * theIter) -> bool{
+				LogicAssert (true == IsGoodPtr (theIter));
+				return theIter->GetValue () == aCellValue + 1;
+			});
+			*/
 			aNumTotal += aNumValue;
 			rit = ((1 == aNumValue) || (0 == aNumValue));
 		}
@@ -191,6 +197,12 @@ namespace isi{
 		bool rit = true;
 		for (CellValue aCellValue = 0; aCellValue < kDim && rit; ++aCellValue){
 			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end () , SCountHelper (aCellValue + 1));
+			/*
+			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end () , [aCellValue] (const Cell * theIter){
+				LogicAssert (true == IsGoodPtr (theIter));
+				return theIter->GetValue () == aCellValue + 1;
+			});
+			*/
 			rit = (1 == aNumValue);
 		}
 		return rit;
@@ -262,11 +274,10 @@ namespace isi{
 		return true;
 	}
 
-	
 	static bool MyCountFree (const Cell * theCell){
 		return theCell->GetStatus () == CellStatus::Variable;
 	}
-	
+
 	static std::size_t CountFree (const CellVector &theCellVector){
 		return std::count_if (theCellVector.begin (), theCellVector.end (), MyCountFree);
 	}
@@ -315,8 +326,12 @@ namespace isi{
                     &theSchema [0][aRowIndex], &theSchema [1][aColIndex], &theSchema [2][aSqrIndex]
                 };
 				const std::size_t aCountFreeFree = CountFreeFree (aMatrix);
+				#if 1
+				sTransformArray.emplace_back (i, CellStatusWithValue (theCell [i].GetStatus (), aCountFreeFree));
+				#else
 				const std::pair <unsigned short, CellStatusWithValue> aPair (i, CellStatusWithValue (theCell [i].GetStatus (), aCountFreeFree));
 				sTransformArray.push_back (aPair);
+				#endif
 			}
 			std::sort (sTransformArray.begin (), sTransformArray.end (), MyCompare);
 			#ifdef _DEBUG
@@ -329,7 +344,7 @@ namespace isi{
 	
     static bool IsGoodSchemaAvailable (const MatrixOfCellPtr * theSchema, const CellValue theValue, const unsigned short theTransformedIndex){
 		LogicAssert (true == IsGoodPtr (theSchema));
-		LogicAssert (true == IsGoodSchema (theSchema));
+		LogicAssert (true == IsGoodSchema (theSchema)); // this is the slow assert
 #ifdef _DEBUG
         bool aGood = true;
         for (int i = 0; i < 3 && aGood; ++i){
