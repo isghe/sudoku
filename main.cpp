@@ -175,7 +175,9 @@ namespace isi{
 		}
 	};
 #endif
-	static bool IsGoodSchemaSequence (const CellVector &theCellVector){
+
+	#ifdef _DEBUG
+	static bool IsGoodSchemaSequenceOriginal (const CellVector &theCellVector){
 		size_t aNumTotal = std::count_if (theCellVector.begin (), theCellVector.end (), SCountHelper (0));
 		bool rit = true;
 		for (CellValue aCellValue = 0; aCellValue < kDim && rit; ++aCellValue){
@@ -191,7 +193,36 @@ namespace isi{
 		}
 		return (kDim == aNumTotal) && rit;
 	}
-	
+	#endif
+
+	static bool IsGoodSchemaSequenceAdvanced (const CellVector &theCellVector){
+		size_t aNumTotal = 0;
+		bool rit = true;
+		for (CellValue aCellValue = 0; aCellValue < (kDim + 1) && rit; ++aCellValue){
+			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end (), SCountHelper (aCellValue));
+			/*
+			const size_t aNumValue = std::count_if (theCellVector.begin (), theCellVector.end () , [aCellValue] (const Cell * theIter) -> bool{
+				LogicAssert (true == IsGoodPtr (theIter));
+				return theIter->GetValue () == aCellValue + 0;
+			});
+			*/
+			aNumTotal += aNumValue;
+			rit = ((1 == aNumValue) || (0 == aNumValue) || (0 == aCellValue));
+		}
+		return (kDim == aNumTotal) && rit;
+	}
+
+	static bool IsGoodSchemaSequence (const CellVector &theCellVector){
+		#ifdef _DEBUG
+		const bool aOriginal = IsGoodSchemaSequenceOriginal (theCellVector);
+		const bool aAdvanced = IsGoodSchemaSequenceAdvanced (theCellVector);
+		LogicAssert (aOriginal == aAdvanced);
+		return aAdvanced;
+		#else
+		return IsGoodSchemaSequenceAdvanced (theCellVector);
+		#endif
+	}
+
 	static bool IsGoodSolutionSequence (const CellVector &theCellVector){
 		LogicAssert (true == IsGoodSchemaSequence (theCellVector));
 		bool rit = true;
