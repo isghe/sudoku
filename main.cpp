@@ -142,15 +142,26 @@ namespace isi{
 		}
 	}
 
-	struct SFindHelper: public std::binary_function <bool, SCell *, CellValue>{
+	struct SMatchHelper: public std::binary_function <bool, SCell *, CellValue>{
+		private:
 		const CellValue fCellValue;
+
+		public:
 		bool operator () (const Cell * theIter) const{
 			LogicAssert (true == IsGoodPtr (theIter));
 			return theIter->GetValue () == fCellValue;
 		}
-
-		SFindHelper (const CellValue theCellValue):
+		explicit SMatchHelper (const CellValue theCellValue):
 		fCellValue (theCellValue){
+		}
+
+		private:
+		SMatchHelper &operator = (const SMatchHelper &);
+	};
+
+	struct SFindHelper: SMatchHelper{
+		explicit SFindHelper (const CellValue theCellValue):
+		SMatchHelper (theCellValue){
 			LogicAssert ((theCellValue > 0) && (theCellValue <= 9));
 		}
 	};
@@ -161,20 +172,13 @@ namespace isi{
         const CellVector::const_iterator aIterResult = std::find_if (theCellVector.begin (), theCellVector.end () , SFindHelper (theCellValue));
         return  theCellVector.end () == aIterResult;
 	}
-#if 1
-	struct SCountHelper: public std::binary_function <bool, Cell *, CellValue>{
-		const CellValue fCellValue;
-		bool operator () (const Cell * theIter) const{
-			LogicAssert (true == IsGoodPtr (theIter));
-			return theIter->GetValue () == fCellValue;
-		}
 
+	struct SCountHelper: SMatchHelper{
 		explicit SCountHelper (const CellValue theCellValue):
-		fCellValue (theCellValue){
+		SMatchHelper (theCellValue){
 			LogicAssert (/*(theCellValue >= 0) &&*/ (theCellValue <= 9));
 		}
 	};
-#endif
 
 	#ifdef _DEBUG
 	static bool IsGoodSchemaSequenceOriginal (const CellVector &theCellVector){
