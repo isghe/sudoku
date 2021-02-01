@@ -6,7 +6,7 @@
 //
 // Lissone (MB), Italy
 // Sat Jun 14 16:12:24 CEST 2014
-// Copyright 2005-2018, Isidoro Ghezzi
+// Copyright 2005-2021, Isidoro Ghezzi
 // isidoro.ghezzi@icloud.com
 //
 // Porting to:
@@ -14,6 +14,7 @@
 //  yosemite, OS X 10.10.3
 //  OS X El Capitan 10.11.6
 //  macOS High Sierra 10.13.4
+//  macOS Catalina 10.15.7
 //
 
 #include "common.h"
