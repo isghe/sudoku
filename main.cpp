@@ -584,8 +584,8 @@ Target: x86_64-apple-darwin14.3.0
 Thread model: posix
 
  $ make
-g++ -Wall -ansi -pedantic -Wextra -O3 main.cpp -o sudoku.out
-g++ -Wall -ansi -pedantic -Wextra -g -D_DEBUG main.cpp -o sudoku_d.out
+g++ -Wall -ansi -pedantic -Wextra -O3 main.cpp -o sudoku.out -std=c++11
+g++ -Wall -ansi -pedantic -Wextra -g -D_DEBUG main.cpp -o sudoku_d.out -std=c++11
 
  run:
  $ ./sudoku.out example/diabolikus_08062008.sdk
