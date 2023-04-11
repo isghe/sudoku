@@ -51,6 +51,7 @@ namespace isi{
 					return "Variable";
 			}
 			LogicAssert (false);
+			return NULL;
 		}
 	}
 	#endif
